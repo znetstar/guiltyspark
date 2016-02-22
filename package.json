@@ -1,0 +1,23 @@
+{
+  "name": "guiltyspark",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "agenda": "^0.7.8",
+    "async": "^1.5.2",
+    "commander": "^2.9.0",
+    "cson": "^3.0.2",
+    "event-stream": "^3.3.2",
+    "express": "^4.13.4",
+    "natural": "^0.2.1",
+    "qs": "^6.1.0",
+    "temp": "^0.8.3",
+    "websocket": "^1.0.22"
+  }
+}
