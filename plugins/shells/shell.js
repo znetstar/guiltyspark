@@ -27,7 +27,7 @@ const plugin = {
 			app.classifier.addDocument('find files in', 'shell.find');
 			app.classifier.addDocument('find files', 'shell.find');
 			// cat
-			app.classifier.addDocument('read file qqq', 'shell.cat');
+			
 		});
 
 		var shell_input = function (method, reject){
@@ -52,6 +52,7 @@ const plugin = {
 		app.on('shell.cat', shell_input('cat', [ "file", "files" ]));
 		
 		app.on('shell.exec', function (args, context, callback) {
+			args = app.strip_args(args, [ 'execute', 'command' ]);
 			shelljs.exec(args.join(' '), { async: true, silent: true }, function (code, output) {
 				if (code === 0){
 					context.push(null, output);

@@ -20,7 +20,7 @@ const plugin = {
 		app.mpd_cmd = mpd.cmd;
 
 		app.on('classify', function () {
-			app.classifier.addDocument('play music', 'mpd.play');
+			app.classifier.addDocument('resume music', 'mpd.play');
 			app.classifier.addDocument('pause music', 'mpd.pause');
 
 			app.classifier.addDocument('stop music', 'mpd.stop');
@@ -29,6 +29,9 @@ const plugin = {
 			app.classifier.addDocument('blast it!', 'mpd.volume.max');
 			app.classifier.addDocument('turn the volume down', 'mpd.volume.down');
 			app.classifier.addDocument('quieter', 'mpd.volume.down');
+			app.classifier.addDocument('lower the volume', 'mpd.volume.down');
+			app.classifier.addDocument('mute the volume', 'mpd.volume.mute');
+			app.classifier.addDocument('raise the volume', 'mpd.volume.up');
 
 			app.classifier.addDocument('set the volume to', 'mpd.volume.set');
 
@@ -43,17 +46,27 @@ const plugin = {
 			app.classifier.addDocument("previous song", 'mpd.previous');
 			app.classifier.addDocument("last song", 'mpd.previous');
 
+			app.classifier.addDocument("play a song by qqq", 'mpd.play_song');
+			app.classifier.addDocument("play a something by qqq", 'mpd.play_song');
+			app.classifier.addDocument("play qqq", 'mpd.play_song');
+			app.classifier.addDocument("clear playlist", 'mpd.clear_playlist');
+			app.classifier.addDocument("shuffle music", 'mpd.shuffle');
+			app.classifier.addDocument("repeat music", 'mpd.repeat');
 		});
 
 
-		const mpd_volume = (callback) => {
-			app.mpd.sendCommand(app.mpd_cmd('status', []), (error, msg) => {
-				callback(error, parseFloat(msg && msg.split('volume: ').pop().split("\n").shift().trim()));
-			});
+		const mpd_status = (property) => {
+			return (callback) => {
+				app.mpd.sendCommand(app.mpd_cmd('status', []), (error, msg) => {
+					callback(error, parseFloat(msg && msg.split(`${property}: `).pop().split("\n").shift().trim()));
+				});
+			};
 		};
 
+		const mpd_volume = mpd_status('volume');
+
 		app.on('mpd.volume.get', (args, context, callback) => {
-			mpd_volume((vol) => { 
+			mpd_volume((error, vol) => { 
 				context.push(`${vol}%`);
 				callback(error, context);
 			});
@@ -135,7 +148,7 @@ const plugin = {
 
 		app.on('mpd.play', (args, context, callback) => {
 			args = app.strip_args(args, [
-				'play', 'music'
+				'play', 'music' 
 			]);
 
 			app.mpd.sendCommand(app.mpd_cmd('play', []), (error, msg) => {
@@ -155,6 +168,18 @@ const plugin = {
 			});
 		});
 
+
+		app.on('mpd.volume.mute', (args, context, callback) => {
+			args = app.strip_args(args, [
+			]);
+
+			app.mpd.sendCommand(app.mpd_cmd('setvol', [ 0 ]), (error, msg) => {
+				context.push((msg || 'Muting'));
+				callback(error, context);
+			});
+		});
+
+
 		app.on('mpd.next', (args, context, callback) => {
 			app.mpd.sendCommand(app.mpd_cmd('next', []), (error, msg) => {
 				context.push('Playing the next song');
@@ -173,6 +198,44 @@ const plugin = {
 			app.mpd.sendCommand(app.mpd_cmd('stop', []), (error, msg) => {
 				context.push('Stopping all music');
 				callback(error, context);
+			});
+		});
+
+
+		app.on('mpd.clear_playlist', (args, context, callback) => {
+			app.mpd.sendCommand(app.mpd_cmd('clear', []), (error, msg) => {
+				callback(null, context.concat('Cleared the current playlist'));
+			});
+		});
+
+		app.on('mpd.shuffle', (args, context, callback) => {
+			mpd_status('random')((err, val) => {
+				var random = !(Boolean(val));
+				app.mpd.sendCommand(app.mpd_cmd('random', [ Number(random) ]), (error, msg) => {
+					callback(null, context.concat(random ? `Shuffling music` : `Not shuffling music`));
+				});
+			});
+		});
+
+		app.on('mpd.repeat', (args, context, callback) => {
+			mpd_status('repeat')((err, val) => {
+				var random = !(Boolean(val));
+				app.mpd.sendCommand(app.mpd_cmd('repeat', [ Number(random) ]), (error, msg) => {
+					callback(null, context.concat(random ? `Repeating music` : `Not repeating music`));
+				});
+			});
+		});
+
+		app.on('mpd.play_song', (args, context, callback) => {
+			args = app.strip_args(args, [
+				'play', 'by', 'a', 'song', 'something', 'songs', 'music'
+			]);
+
+			app.mpd.sendCommand(app.mpd_cmd('findadd', ['any', args.join(' ')]), (error, msg) => {
+				app.mpd.sendCommand(app.mpd_cmd('play', []), (error) => {
+					context.push((msg || `Playing "${args.join(' ')}"`));
+					callback(error, context);
+				});
 			});
 		});
 	}

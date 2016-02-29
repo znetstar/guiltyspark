@@ -14,13 +14,17 @@ const plugin = {
 			app.classifier.addDocument('filter qqq', 'filter.wildcard');
 		});
 
-		app.on('filter.wildcard', function (args, context, callback) {
-			args = app.strip_args(args, [ 'filter' ])
-			var results = context.slice(0)[0].filter((path) => {
+		app.filter_wildcard = (arr, str) => {
+			return arr.filter((path) => {
 				return path.split(require('path').sep).some((comp) => {
-					return minimatch(comp, args[0])
+					return minimatch(comp, str)
 				});
 			});
+		};
+
+		app.on('filter.wildcard', function (args, context, callback) {
+			args = app.strip_args(args, [ 'filter' ])
+			let results = app.filter_wildcard(context.slice(0)[0], args[0]);
 			context.push(results);
 			callback(null, context);
 		});

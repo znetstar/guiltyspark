@@ -1,9 +1,9 @@
 'use strict';
 
 const plugin = {
-	name: 'http',
+	name: 'freebase',
 	modules: [
-		'request'
+		''
 	],
 	init: function (done) { var app = this;
 		done();
@@ -11,14 +11,13 @@ const plugin = {
 	attach: function (options) { var app = this;
 		options =  options || {};
 		app.on('classify', function () {
-			app.classifier.addDocument('download http://qqq', 'http.request');
-			app.classifier.addDocument('download https://qqq', 'http.request');
+			app.classifier.addDocument("what does a qqq look like?", 'freebase.image');
 		});
 
 		app.on('http.request', function (args, context, callback) {
 			args = app.strip_args(args, ['download']);
 
-			request({ url: args[0], encoding: null }, (error, res, body) => {
+			request(args[0], (error, res, body) => {
 				context.push(body);
 
 				callback(error, context);

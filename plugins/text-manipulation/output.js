@@ -18,6 +18,7 @@ const plugin = {
 			app.classifier.addDocument('render as base64', 'base64.encode');
 			app.classifier.addDocument('render as base32', 'base32.encode');
 			app.classifier.addDocument('render as hex', 'hex.encode');
+			app.classifier.addDocument('summarize', 'summarize');
 		});
 
 		app.on('prettyjson.stringify', function (args, context, callback) {
@@ -37,6 +38,14 @@ const plugin = {
 		app.on('cson.stringify', function (args, context, callback) {
 			context.push(
 				cson.stringify(context.slice(-1)[0])
+			);
+			callback(null, context);
+		});
+
+		app.on('summarize', function (args, context, callback) {
+			let last = context.slice(-1)[0];
+			context.push(
+				last ? 'Task completed successfully' : 'Task failed'
 			);
 			callback(null, context);
 		});

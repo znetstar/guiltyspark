@@ -30,6 +30,7 @@ const plugin = {
 			app.classifier.addDocument("what's the size of qqq?", 'stats.fileusage');
 			app.classifier.addDocument('how much memory is on this qqq?', 'stats.memory');
 			app.classifier.addDocument("what's the current bandwidth on this network?", 'stats.bandwidth');
+			app.classifier.addDocument("how many cpus does this qqq have?", 'stats.cpus');
 		});
 
 		app.on('stats.bandwidth', function (args, context, callback) {
@@ -55,25 +56,30 @@ const plugin = {
 		});
 
 		app.on('stats.free_memory', function (args, context, callback) {
-			context.push(bytes(require('os').freemem()));
+			context.push(`${bytes(require('os').freemem())}`);
+			callback(null, context);
+		});
+
+		app.on('stats.cpus', function (args, context, callback) {
+			context.push(`${(require('os').cpus().length)}`);
 			callback(null, context);
 		});
 
 		app.on('stats.memory', function (args, context, callback) {
-			context.push(bytes(require('os').totalmem()));
+			context.push(`${bytes(require('os').totalmem())}`);
 			callback(null, context);
 		});
 
 		app.on('stats.public_ip', function (args, context, callback) {
 			global['public-ip'](function (err, ip) {
-				context.push(ip)
+				context.push(`${ip}`);
 				callback(null, context);
 			});
 		});
 
 		app.on('stats.private_ip', function (args, context, callback) {
 			let nets = require('os').networkInterfaces();
-			nets = Object.keys(nets).map((inter) => { return { interface: inter, addresses: nets[inter].map((addr) => addr.address) } });
+			nets = Object.keys(nets).map((inter) => { return ({ interface: inter, addresses: nets[inter].map((addr) => addr.address) }) });
 			context.push(nets);
 			callback(null, context);
 		});
@@ -81,7 +87,7 @@ const plugin = {
 		app.on('stats.diskusage', function (args, context, callback) {
 			args = app.strip_args(args, ['is', 'on', 'how', 'much', 'space', 'free', 'available']);
 			diskusage.check(args[0], function (err, info) {
-				context.push(bytes(info.free));
+				context.push(`${bytes(info.free)}`);
 				callback(null, context);
 			});
 		});

@@ -13,7 +13,6 @@ const plugin = {
 	},
 	attach: function (options) { var app = this;
 		options = options || {};
-		app.npm_options = options;
 		app.npm = npm;
 
 		app.on('repl.context', (context) => {
@@ -21,6 +20,8 @@ const plugin = {
 		});
 
 		options.prefix = options.prefix || app.temp.mkdirSync();
+
+		app.npm_options = options;
 
 		app.install_module = (pkg, callback) => {
 			npm.commands.install([pkg], (error, data) => {

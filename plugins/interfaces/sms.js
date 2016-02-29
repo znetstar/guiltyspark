@@ -10,6 +10,7 @@ const plugin = {
 		done();
 	},
 	attach: function (options) { var app = this;
+		app.sms_options = options;
 		app.twilio = new twilio.RestClient(options.sid, options.token)
 		
 		app.on('classify', function () {
@@ -35,22 +36,25 @@ const plugin = {
 				'via',
 				'on',
 				'through',
+				'it', 'to',
 				'notify',
 				'text',
 				'alert',
 				'at'
 			]);
 			if (args[0].indexOf('+') === -1) 
-				args[0] = `+1${args[0]}`;
+				args[0] = `+1${args[0].replace(/[^\d]/g, '')}`;
 
 			let content = context.slice(-1)[0];
-			if (typeof(content) === 'string' && options.send_content) {
+			if (typeof(content) === 'string' && app.sms_options.send_content) {
 				content = content.length < 140 ? content : `${content.substr(0, 135)}...`;
 			} else {
 				content = `Task is complete`;
 			}	
-			context.push(content);
-			callback(null, context);
+			reply(args[0], options.from, content, (error) => {
+				context.push(content);
+				callback(error, context);
+			});
 		});
 
 		const reply = (to, frm, msg, callback) => {

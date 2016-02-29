@@ -11,13 +11,24 @@
   "dependencies": {
     "agenda": "^0.7.8",
     "async": "^1.5.2",
+    "blessed": "^0.1.81",
+    "chalk": "^1.1.1",
     "commander": "^2.9.0",
     "cson": "^3.0.2",
+    "dnode": "^1.2.2",
     "event-stream": "^3.3.2",
     "express": "^4.13.4",
+    "lodash": "^4.5.1",
+    "mmmagic": "^0.4.1",
     "natural": "^0.2.1",
+    "pty.js": "^0.3.0",
     "qs": "^6.1.0",
+    "socket.io": "^1.4.5",
     "temp": "^0.8.3",
+    "term.js": "0.0.7",
     "websocket": "^1.0.22"
+  },
+  "devDependencies": {
+    "image-to-ascii": "^2.3.1"
   }
 }

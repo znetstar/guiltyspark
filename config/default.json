@@ -1,28 +1,60 @@
 {
 	"npm":	{
-		"prefix": "/tmp/s",
+		"prefix": "/tmp/guiltyspark",
 		"silent": true,
 		"cache-min": 999999999999
 	},
 	"interpreters": {
 		"dividers": [
 			"then",
-			"and"
+			"and",
+			"do"
 		],
 		"modifiers": [
-			"agenda"
+			"$agenda",
+			"$rpc"
 		]
 	},
+	"window-manager": {
+		"keys": {
+			"exit": ["escape", "q", "C-c"]
+		}
+	},
+	"colors": {
+		"dividers": [ "then", "and", "do" ],
+		"modifiers": [ "schedule", "remotely" ],
+		"colors": {
+			"dividers": "red",
+			"modifiers": "yellow"
+		}
+	},
 	"web": {
-		
+	},
+	"rpc": {
 	},
 	"sms": {
 		"sid": "AC453eca587083c95ef6cb217d8ffc5fe1",
 		"token": "882f2ac36505be104eede094aca23aba",
-		"from": "+16467624288"
+		"from": "+16467624288",
+		"send_content": true
 	},
 	"pushover": {
 		"user": "ueBBUF43FtunFhTnQHDMzrz4fyY1Qe",
 		"token": "aQfd2Sb9d6G2mXZXE24g7XWmqcnfq1"
+	},
+	"agenda": {
+		"db": { "address": "mongodb://localhost:27017/guiltyspark" }
+	},
+	"voice": {
+		"ffmpeg": {
+			"device": true,
+			"location": "/usr/bin/ffmpeg",
+			"input": "pulse"
+		},
+		"speech_to_text": {
+			"username": "4fe070b6-25e7-4835-b8cc-5b156f7c6635",
+			"password": "pBGTOZX9TXz4",
+			"version": "v1"
+		}
 	}
 }		
